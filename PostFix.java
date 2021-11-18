@@ -46,7 +46,15 @@ class PostFix
     {
         ArrayList<String> lst = new ArrayList<>();
         Stack<String> opStack = new Stack<>();
-        String p = "(?<=\\d)(?=\\D)|(?<=\\D)(?=\\d)|(?<=x)(?!x)|(?<!x)(?=x)|(?<=\\))|(?=\\()";
+        
+        // Important: look arounds are non-consuming
+        // 4 patterns for splitting:
+        // 1. digit followed by non-digit: (?<=\\d)(?=\\D)
+        // 2. non-digit followed by digit: (?<=\\D)(?=\\d)
+        // 3. last char is x or ): (?<=x|\\))
+        // 4. next char is x or (: (?=x|\\()
+//        String p = "(?<=\\d)(?=\\D)|(?<=\\D)(?=\\d)|(?<=x)(?!x)|(?<!x)(?=x)|(?<=\\))|(?=\\()";
+        String p = "(?<=\\d)(?=\\D)|(?<=\\D)(?=\\d)|(?<=x|\\))|(?=x|\\()";
         String[] elements = exp.split(p);
         if(DEBUG) System.out.println(Arrays.toString(elements));
         String lastEle = "";
