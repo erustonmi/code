@@ -15,7 +15,8 @@ class PostFix
     }
     private static boolean isVariable(String s)
     {
-        return s.equalsIgnoreCase("x");
+        //return s.equalsIgnoreCase("x");
+        return s.matches("[x-y]|[X-Y]");
     }
     private static boolean isNum(String s)
     {
@@ -46,7 +47,6 @@ class PostFix
     {
         ArrayList<String> lst = new ArrayList<>();
         Stack<String> opStack = new Stack<>();
-        
         // Important: look arounds are non-consuming
         // 4 patterns for splitting:
         // 1. digit followed by non-digit: (?<=\\d)(?=\\D)
@@ -54,9 +54,10 @@ class PostFix
         // 3. last char is x or ): (?<=x|\\))
         // 4. next char is x or (: (?=x|\\()
 //        String p = "(?<=\\d)(?=\\D)|(?<=\\D)(?=\\d)|(?<=x)(?!x)|(?<!x)(?=x)|(?<=\\))|(?=\\()";
-        String p = "(?<=\\d)(?=\\D)|(?<=\\D)(?=\\d)|(?<=x|\\))|(?=x|\\()";
+        String p = "(?<=\\d)(?=\\D)|(?<=\\D)(?=\\d)|(?<=[x-y]|[X-Y]|\\))|(?=[x-y]|[X-Y]|\\()";
         String[] elements = exp.split(p);
-        if(DEBUG) System.out.println(Arrays.toString(elements));
+        //if(DEBUG) System.out.println(Arrays.toString(elements));
+        System.out.println(Arrays.toString(elements));
         String lastEle = "";
         boolean firstElement = true;
         for(String e:elements)
@@ -121,7 +122,7 @@ class PostFix
                         opStack.push("*");
                     }
                 }
-                lst.add("x");
+                lst.add(e);
             }
             else
             {
@@ -145,9 +146,18 @@ class PostFix
     public static int convertStringToInt(String s)
     {
         int n = 0;
-        if(isVariable(s))
+        //if(isVariable(s))
+        if(s.matches("x|X"))
         {
             n = 7;
+        }
+        else if(s.matches("y|Y"))
+        {
+            n = 8;
+        }
+        else if(s.matches("z|Z"))
+        {
+            n = 9;
         }
         else
         {
@@ -198,6 +208,7 @@ class PostFix
             "7x   *        (  3-x)",
             "(x+3)(7-3x)",
             "(  3-x)*5",
+            "3(  3-x)", "x*5", "xx", "xy", "xyz",
             "5x", "x", "5*2-3", "5-2*3"};
 
         for(String exp: exps)
