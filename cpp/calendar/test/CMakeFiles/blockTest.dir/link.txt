@@ -1,0 +1,1 @@
+/usr/bin/c++ -g CMakeFiles/blockTest.dir/block.t.cpp.o -o blockTest  ../src/libcalendar.a 
