@@ -1,2 +1,0 @@
-/usr/bin/ar qc libcalendar.a CMakeFiles/calendar.dir/block.cpp.o CMakeFiles/calendar.dir/board.cpp.o
-/usr/bin/ranlib libcalendar.a

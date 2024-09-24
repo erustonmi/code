@@ -1,9 +1,0 @@
-/home/mj/cpp/calendar/CMakeFiles/calendarSolver.dir
-/home/mj/cpp/calendar/CMakeFiles/edit_cache.dir
-/home/mj/cpp/calendar/CMakeFiles/rebuild_cache.dir
-/home/mj/cpp/calendar/src/CMakeFiles/calendar.dir
-/home/mj/cpp/calendar/src/CMakeFiles/edit_cache.dir
-/home/mj/cpp/calendar/src/CMakeFiles/rebuild_cache.dir
-/home/mj/cpp/calendar/test/CMakeFiles/blockTest.dir
-/home/mj/cpp/calendar/test/CMakeFiles/edit_cache.dir
-/home/mj/cpp/calendar/test/CMakeFiles/rebuild_cache.dir
