@@ -11,6 +11,7 @@ namespace Color {
         FG_MAGENTA  = 35,
         FG_CYAN     = 36,
         FG_WHITE    = 37,
+        FG_DEFAULT  = 39,
         BG_BLACK    = 40,
         BG_RED      = 41,
         BG_GREEN    = 42,
@@ -18,11 +19,12 @@ namespace Color {
         BG_BLUE     = 44,
         BG_MAGENTA  = 45,
         BG_CYAN     = 46,
-        BG_WHITE    = 47
+        BG_WHITE    = 47,
+        BG_DEFAULT  = 49
     };
     class Modifier {
-        Code code;
     public:
+        Code code;
         Modifier(Code pCode) : code(pCode) {}
         friend std::ostream&
         operator<<(std::ostream& os, const Modifier& mod) {

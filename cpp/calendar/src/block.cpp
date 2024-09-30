@@ -1,14 +1,18 @@
 #include "block.h"
-#include <algorithm>
+#include "board.h"
+//#include <algorithm>
 using namespace std;
 
+int Block::count = 0;
 Block::Block(const Color::Modifier& cm,
-                         int r, int c,
-                         const vector<int>& v)
-                         :colorMod(cm),numRows(r),numCols(c),numRep(0)
+             int r, int c, int boardRow, int boardCol,
+             const vector<int>& v)
+             :used(false),colorMod(cm),
+             numRows(r),numCols(c),numRep(0)
 {
     size = r * c;
     arr = new int[size];
+    cout << "in constructor " << arr << endl;
     for(int i = 0; i < r*c; ++i)
     {
         if(find(v.begin(), v.end(), i) != v.end())
@@ -21,10 +25,46 @@ Block::Block(const Color::Modifier& cm,
         {
             //cout << i << " valid" << endl;
             arr[i] = 1;
+            int posOnBoard = i % numCols + i / numCols * boardCol;
         }
         numRep = numRep * 10 + arr[i];
     }
     origNumRep = numRep;
+    origNumRows = numRows;
+    origNumCols = numCols;
+    count++;
+    m_seqNo = count;
+    m_state = 0;
+    bool flipped = false;
+    do
+    {
+        do
+        {
+            set<int> p;
+            for(int i = 0; i < numRows * numCols; ++i)
+            {
+                if(arr[i] == 1)
+                {
+                    int posOnBoard = i % numCols + i / numCols * boardCol;
+                    p.insert(posOnBoard);
+                }
+            }
+            posVec.push_back(p);
+        } while(rotate());
+        if(flipped) break;
+        if(!flip()) break;
+        flipped = true;
+    } while(true);
+    flip();
+    #if _DEBUG
+    cout << "on board position vector:" << endl;
+    for(auto& p : posVec)
+    {
+        for(int i : p) cout << i << " ";
+        cout << endl;
+    }
+    cout << "posvec size:" << posVec.size() << endl;
+    #endif
 }
 
 Block::Block(const Block& other):
@@ -32,16 +72,35 @@ Block::Block(const Block& other):
     numRows(other.numRows),
     numCols(other.numCols),
     numRep(other.numRep),
-    origNumRep(other.origNumRep)
+    origNumRows(other.origNumRows),
+    origNumCols(other.origNumCols),
+    origNumRep(other.origNumRep),
+    m_seqNo(other.m_seqNo),
+    m_state(other.m_state)
 {
     size = numRows * numCols;
     arr = new int[size];
+    cout << "in copy constructor " << arr << endl;
     for(int i = 0; i < numRows * numCols; ++i)
     {
         arr[i] = other.arr[i];
     }
+//    cout << "here in copy, other.posVec.size:"
+ //        << other.posVec.size()
+  //       << ", posVec.size:" << posVec.size() << endl;
+    for(auto& p : other.posVec)
+    {
+   //     cout << "p.size:" << p.size() << endl;
+        set<int> s;
+        for(int i : p) s.insert(i);
+    //    cout << "here2 in copy" << endl;
+        posVec.push_back(s);
+     //   cout << "posVec.size:" << posVec.size() << endl;
+    }
+    cout << "end of copy constructor" << endl;
 }
 
+// returns false if the new state is the same as original
 bool Block::rotate()
 {
     vector<int> sav(arr, arr+numCols*numRows);
@@ -57,7 +116,10 @@ bool Block::rotate()
     numRows = numCols;
     numCols = tmp;
     updateNumRep();
-    return (numRep != origNumRep);
+    m_state = (m_state + 90) % 360;
+    return (numRows != origNumRows ||
+            numCols != origNumCols ||
+            numRep != origNumRep);
 }
 
 bool Block::flip()
@@ -93,6 +155,31 @@ bool Block::sameAs(const Block& other) const
             numRep == other.numRep);
 }
 
+bool Block::fitIn(const set<int>& area,
+                  set<int>& occupiedPos)
+{
+    cout << "posvec size:" << posVec.size() << endl;
+    for(auto& s : posVec)
+    {
+        set<int> s2;
+        for(auto& i : s)
+        {
+            int newPos = i+*area.begin()-*s.begin();
+            s2.insert(newPos);
+            cout << newPos << " ";
+        }
+        cout << endl;
+        //for(int i : s2) cout << i << " ";
+        cout << endl;
+        if(includes(area.begin(), area.end(), s2.begin(), s2.end()))
+        {
+            occupiedPos = s2;
+            return true;
+        }
+    }
+    return false;
+}
+
 bool Block::operator==(const Block& other)
 {
     if(size != other.size) return false;
@@ -122,6 +209,9 @@ bool Block::operator==(const Block& other)
 
 std::ostream& operator<<(std::ostream& os, const Block& b)
 {
+    cout << "posvec size:" << b.posVec.size()
+         << ", seq:" << b.m_seqNo
+         << ", state:" << b.m_state << endl;
     for(int i = 0; i < b.numRows; ++i)
     {
         for(int j = 0; j < b.numCols; ++j)

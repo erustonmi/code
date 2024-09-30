@@ -37,7 +37,7 @@ void Graph::connectedComponents()
             // from v
             int c = DFSUtil(v, visited);
  
-            cout << "\n" << c << "\n";
+            cout << "\nsize:" << c << "\n\n";
         }
     }
     delete[] visited;
@@ -78,14 +78,17 @@ void Graph::addEdge(int v, int w)
 int main()
 {
     // Create a graph given in the above diagram
-    Graph g(8); // 5 vertices numbered from 0 to 4
+    Graph g(11); // 5 vertices numbered from 0 to 4
     g.addEdge(1, 0);
     g.addEdge(2, 1);
-    //g.addEdge(0, 3);
-    g.addEdge(3, 4);
+    g.addEdge(2, 3);
+    g.addEdge(4, 3);
     g.addEdge(4, 5);
-    g.addEdge(5, 6);
-    g.addEdge(7, 6);
+    //g.addEdge(0, 3);
+    g.addEdge(6, 1);
+    g.addEdge(7, 0);
+    g.addEdge(9, 10);
+    g.addEdge(9, 2);
  
     cout << "Following are connected components \n";
     g.connectedComponents();
