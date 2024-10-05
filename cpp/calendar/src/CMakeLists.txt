@@ -1,4 +1,4 @@
-add_library(calendar block.cpp board.cpp graph.cpp)
+add_library(calendar block.cpp board.cpp)
 #add_library(calendar block.cpp)
 
 if ( UNIX )

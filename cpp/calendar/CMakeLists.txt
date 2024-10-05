@@ -11,6 +11,7 @@ elseif( WIN32 )
 set( CMAKE_CXX_FLAGS_DEBUG_INIT "/GS" )
 endif()
 
+set(CMAKE_BUILD_TYPE Debug)
 add_subdirectory(src)
 add_executable(calendarSolver main.cpp)
 add_subdirectory(test)
