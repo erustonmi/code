@@ -34,9 +34,9 @@ Block::Block(const Color::Modifier& cm,
     origNumRep = numRep;
     origNumRows = numRows;
     origNumCols = numCols;
-    count++;
     m_seqNo = count;
-    m_state = 0;
+    count++;
+    //m_state = 0;
     bool flipped = false;
     do
     {
@@ -58,7 +58,8 @@ Block::Block(const Color::Modifier& cm,
         flipped = true;
     } while(true);
     flip();
-    #if _DEBUG
+//    cout << "block size:" << size << endl;
+#if 0
     cout << "on board position vector:" << endl;
     for(int i = 0; i < m_pobVec.m_posVec.size(); ++i)
     {
@@ -67,7 +68,7 @@ Block::Block(const Color::Modifier& cm,
         cout << endl;
     }
     cout << "end of constructor.  m_posvec size:" << m_pobVec.m_posVec.size() << endl;
-    #endif
+#endif
 }
 
 Block::Block(const Block& other):
@@ -80,42 +81,22 @@ Block::Block(const Block& other):
     origNumCols(other.origNumCols),
     origNumRep(other.origNumRep),
     used(false),
-    m_seqNo(other.m_seqNo),
-    m_state(other.m_state)
+    m_seqNo(other.m_seqNo)
 {
     size = numRows * numCols;
-//    arr = new int[size];
-//    cout << "in copy constructor " << arr << endl;
     arr.resize(size);
     for(int i = 0; i < numRows * numCols; ++i)
     {
         arr[i] = other.arr[i];
     }
-//    cout << "here in copy, other.posVec.size:"
- //        << other.posVec.size()
-  //       << ", posVec.size:" << posVec.size() << endl;
-    /*
-    for(auto& p : other.posVec)
-    {
-   //     cout << "p.size:" << p.size() << endl;
-        set<int> s;
-        for(int i : p) s.insert(i);
-    //    cout << "here2 in copy" << endl;
-        posVec.push_back(s);
-     //   cout << "posVec.size:" << posVec.size() << endl;
-    }
-    */
     for(auto&p : other.m_pobVec.m_posVec)
     {
         set<int> s;
         for(int i : p) s.insert(i);
         m_pobVec.m_posVec.push_back(s);
     }
-//    cout << "other posvec size: " << other.m_pobVec.m_posVec.size() << endl;
-//    cout << "my posvec size: " << m_pobVec.m_posVec.size() << endl;
     m_pobVec.m_currIdx = 0;//other.m_pobVec.m_currIdx;
     cout << "leaving copy constructor " << endl;
-//    cout << "end of copy constructor" << endl;
 }
 
 // returns false if the new state is the same as original
@@ -126,7 +107,6 @@ bool Block::rotate()
     {
         for(int j = 0; j < numCols; ++j)
         {
-            //cout << j*numRows+numRows-i-1 << "=" << i*numCols+j<< endl;
             arr[j*numRows+numRows-i-1] = sav[i*numCols+j];
         }
     }
@@ -134,7 +114,7 @@ bool Block::rotate()
     numRows = numCols;
     numCols = tmp;
     updateNumRep();
-    m_state = (m_state + 90) % 360;
+    //m_state = (m_state + 90) % 360;
     return (numRows != origNumRows ||
             numCols != origNumCols ||
             numRep != origNumRep);
@@ -142,7 +122,6 @@ bool Block::rotate()
 
 bool Block::rotatePosition()
 {
-    //m_state = (m_state + 90) % 360;
     return m_pobVec.rotate();
 }
 
@@ -153,7 +132,6 @@ bool Block::flip()
     {
         for(int j = 0; j < numCols/2; ++j)
         {
-            //cout << i*numCols+j << "<==>" << i*numCols+(numCols-j-1) << endl;
             int tmp = arr[i*numCols+j];
             arr[i*numCols+j] = arr[i*numCols+(numCols-j-1)];
             arr[i*numCols+(numCols-j-1)] = tmp;
@@ -180,32 +158,11 @@ bool Block::sameAs(const Block& other) const
 }
 
 bool Block::fitIn(const set<int>& area,
-                  int stopPos,
                   set<int>& occupiedPos)
 {
-    return m_pobVec.fitIn(area, stopPos, occupiedPos, boardNumCols);
-/*
-    cout << "posvec size:" << posVec.size() << endl;
-    for(auto& s : posVec)
-    {
-        set<int> s2;
-        for(auto& i : s)
-        {
-            int newPos = i+*area.begin()-*s.begin();
-            s2.insert(newPos);
-            cout << newPos << " ";
-        }
-        cout << endl;
-        //for(int i : s2) cout << i << " ";
-        cout << endl;
-        if(includes(area.begin(), area.end(), s2.begin(), s2.end()))
-        {
-            occupiedPos = s2;
-            return true;
-        }
-    }
-    return false;
-*/
+ //   int diff = area.size() - size;
+//    if(diff < 0 || diff == 1 || diff == 2 || diff == 3 || diff == 6 || diff == 7) return false;
+    return m_pobVec.fitIn(area, occupiedPos, boardNumCols);
 }
 
 bool Block::operator==(const Block& other)
@@ -213,33 +170,32 @@ bool Block::operator==(const Block& other)
     if(size != other.size) return false;
     if(numRows*numCols != other.numRows*other.numCols) return false;
     if(sameAs(other)) return true;
-    cout << "chkpt1" << endl;
+    //cout << "chkpt1" << endl;
     Block copy1(other);
     while(copy1.rotate())
     {
         if(sameAs(copy1)) return true;
     }
-    cout << "chkpt2" << endl;
+    //cout << "chkpt2" << endl;
     Block copy2(other);
     if(copy2.flip())
     {
         if(sameAs(copy2)) return true;
-        cout << "chkpt3" << endl;
+        //cout << "chkpt3" << endl;
         while(copy2.rotate())
         {
             if(sameAs(copy2)) return true;
         }
-        cout << "chkpt4" << endl;
+        //cout << "chkpt4" << endl;
     }
-    cout << "chkpt5" << endl;
+    //cout << "chkpt5" << endl;
     return false;
 }
 
 std::ostream& operator<<(std::ostream& os, const Block& b)
 {
     cout << "posvec size:" << b.m_pobVec.m_posVec.size()
-         << ", seq:" << b.m_seqNo
-         << ", state:" << b.m_state << endl;
+         << ", seq:" << b.m_seqNo << endl;
     for(int i = 0; i < b.numRows; ++i)
     {
         for(int j = 0; j < b.numCols; ++j)
@@ -269,46 +225,39 @@ bool Block::POBVector::rotate()
         m_currIdx = 0;
         rc = false;
     }
+    /*
     cout << "In pobvector::rotate, m_currIdx:" << m_currIdx
          << ", posVec.size:" << m_posVec.size() << endl;
+    */
     return rc;
 }
 
 bool Block::POBVector::fitIn(const std::set<int>& area,
-                             int stopPos,
                              std::set<int>& occupiedPos,
                              int numCols)
 {
+#if 0
     cout << "area=[";
     for(auto i : area) cout << i << " ";
     cout << "]\nin pobvec.fit, m_posVec size:" << m_posVec.size()
-         << ", numCols:" << numCols << ", stopPos:" << stopPos
+         << ", numCols:" << numCols
          << ", currIdx:" << m_currIdx << endl;
+#endif
     while(m_currIdx < m_posVec.size())
     {
-        if(stopPos == m_currIdx)
-        {
-            return false;
-            //m_currIdx++;
-            //continue;
-        }
         const set<int>& p = m_posVec[m_currIdx];
         int shift = *area.begin() - *p.begin();
         if(shift >= 0)
         {
-            /*
-            int lastIdx = *p.rbegin();
-            if(lastIdx + *area.begin() - *p.begin() <
-               (lastIdx / numCols + (*area.begin()-*p.begin())/numCols + 1) * numCols)
-               */
             {
+#if 0
                 cout << "numCols:" << numCols
                      << ", currIdx:" << m_currIdx << ", pos vec:{ ";
+#endif
                 set<int> s;
                 bool noFit = false;
                 for(auto& i : p)
                 {
-                    //if(shift > 0 && (i+1) % numCols == 0)
                     if(i + shift >= (i/numCols + shift/numCols + 1) * numCols)
                     {
                         noFit = true;
@@ -316,9 +265,9 @@ bool Block::POBVector::fitIn(const std::set<int>& area,
                     }
                     int newPos = i+shift;
                     s.insert(newPos);
-                    cout << "(" << i << "," << newPos << ") ";
+//                    cout << "(" << i << "," << newPos << ") ";
                 }
-                cout << "}" << endl;
+ //               cout << "}" << endl;
                 if(!noFit)
                 {
                     if(includes(area.begin(), area.end(), s.begin(), s.end()))
@@ -328,15 +277,6 @@ bool Block::POBVector::fitIn(const std::set<int>& area,
                     }
                 }
             }
-            /*
-            else
-            {
-                cout << "bad currIdx:" << m_currIdx << "," 
-                     << lastIdx + *area.begin() - *p.begin()
-                     << ","
-                     << (lastIdx / numCols + 1) * numCols << endl;
-            }
-            */
         }
         m_currIdx++;
         if(m_currIdx == m_posVec.size())

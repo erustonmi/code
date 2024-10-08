@@ -45,9 +45,7 @@ protected:
 
 //    std::vector<Block>::iterator fit(std::set<int>&,
  //                                    std::vector<Block>&);
-    std::vector<Block>::iterator fit(std::set<int>& area,
-                                std::vector<Block>& blocks,
-                                const std::pair<int, int>& blockToSkip);
+    int fit(std::set<int>&, std::vector<Block>&, int);
     void markOccupied(const std::set<int>& pos, const Color::Code&);
     void saveState(std::set<int>&);
     void restoreState(const std::set<int>&);
