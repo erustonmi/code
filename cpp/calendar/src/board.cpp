@@ -62,114 +62,38 @@ void Board::initBoard()
 #endif
 }
 
-bool Board::fit2(std::vector<Block>& blocks)
-{
-    for(auto& b:blocks) b.used = false;
-    set<int> area;
-    stack<int> seqNums; // sequence numbers of the first matching blocks
-    stack<set<int>> boardStates;
-    //stack<Block> savedBlocks;
-    stack<int> savedBlocks;
-    cout << "CHKPT1, area empty:" << area.empty()
-         << ", block size:" << blocks.size() << endl;
-    //bool recNextSeqNo = false;
-    while(!area.empty() || findNextOpenArea(area))
-    {
-        set<int> savedState;
-        saveState(savedState);
-        auto it = fit(area, blocks);
-        cout << "conditions: " << (it!=blocks.end())
-             << ", " << seqNums.empty() << endl;
-        if(it != blocks.end() &&
-           (seqNums.empty() || it->m_seqNo != seqNums.top()))
-        {
-            cout << "found a fitting block, pushing " << it->m_seqNo << endl;
-            boardStates.push(savedState);
-            it->used = true;
-            savedBlocks.push(it->m_seqNo);
-            /*
-            if(recNextSeqNo)
-            {
-                seqNums.push(it->m_seqNo);
-                recNextSeqNo = false;
-            }
-            */
-            //blocks.erase(it);
-            area.clear();    
-            //recNextSeqNo = true;
-        }
-        else
-        {
-            cout << "no block fits, stack size: "
-                 << boardStates.size() << ", "
-                 << savedBlocks.size() << ", "
-                 << seqNums.size() << endl;
-            if(it != blocks.end())
-            {
-                // the block has previously been tested
-                cout << "popping seqNum " << it->m_seqNo << endl;
-                seqNums.pop();
-            }
-            // if can't find a fitting block
-            if(boardStates.empty()) return false;
-            area = boardStates.top();
-            boardStates.pop();
-            restoreState(area);
-            int seqNo = savedBlocks.top();
-            cout << "popping " << seqNo << endl;
-            auto it = blocks.begin();
-            for(; it != blocks.end(); ++it)
-            {
-                if(it->m_seqNo == seqNo)
-                {
-                    break;
-                }
-            }
-            it->used = false;
-            if(!it->rotatePosition())
-            {
-                cout << "pushing seqNum " << it->m_seqNo << endl;
-                seqNums.push(it->m_seqNo);
-                rotate(it, it+1, blocks.end());
-            }
-            cout << "after popping, adjmap size:" << m_adjMap.size() << ", current board:\n" << *this << endl;
-            savedBlocks.pop();
-            //recNextSeqNo = false;
-        }
-    }
-    while(!boardStates.empty()) boardStates.pop();
-    while(!savedBlocks.empty())
-    {
-        savedBlocks.pop();
-    }
-    cout << "CHKPT2, stack size:"
-         << savedBlocks.size() << endl;
-    return true;
-}
-
 bool Board::fit(std::vector<Block>& blocks)
 {
     int cntr = 0;
     for(auto& b:blocks) b.used = false;
     set<int> area;
     map<int, pair<int, int>> seqNumMap; // sequence numbers of the first matching blocks
+    map<int, int> blocksToSkipMap;
+    //map<int, int> toBeSkipped;
     stack<set<int>> boardStates;
     //stack<Block> savedBlocks;
     stack<int> savedBlocks;
     cout << "CHKPT1, area empty:" << area.empty()
          << ", block size:" << blocks.size() << endl;
     //bool recNextSeqNo = false;
-    while(!area.empty() || findNextOpenArea(area))
+    //while(!area.empty() || findNextOpenArea(area))
+    while(findNextOpenArea(area))
     {
         set<int> savedState;
         saveState(savedState);
-        auto it = fit(area, blocks);
+        auto mit = seqNumMap.find(cntr);
+
+        auto it = fit(area, blocks, 
+                      mit == seqNumMap.end() ? make_pair(-1, -1) : mit->second);
+        /*
         if(it != blocks.end() &&
            (seqNumMap.find(cntr) == seqNumMap.end() ||
             it->m_seqNo != seqNumMap[cntr].first ||
             it->getPosIdx() != seqNumMap[cntr].second))
+        */
+        if(it != blocks.end())
         {
-            if(seqNumMap.find(cntr) == seqNumMap.end())
+            if(mit == seqNumMap.end())
             {
                 cout << "cntr:" << cntr
                      << ", saving seqNum:" << it->m_seqNo
@@ -183,7 +107,6 @@ bool Board::fit(std::vector<Block>& blocks)
                      << "," << seqNumMap[cntr].second
                      << ")" << endl;
             }
-            cntr++;
             boardStates.push(savedState);
             it->used = true;
             savedBlocks.push(it->m_seqNo);
@@ -192,28 +115,60 @@ bool Board::fit(std::vector<Block>& blocks)
                  << " to block stack"
                  << ", cntr:" << cntr
                  << ", seqNuMap.size:" << seqNumMap.size() << endl;
+
+            /*
+            auto it2 = toBeSkipped.find(cntr);
+            if(it2 != toBeSkipped.end() &&
+               it2->second!= it->m_seqNo)
+            {
+                cout << "adding " << it2->second
+                     << " to blocksToSkipMap for loop " << cntr
+                     << endl;
+                blocksToSkipMap[cntr] = it2->second;
+                toBeSkipped.erase(it2);
+                if(toBeMoved != it->m_seqNo)
+                {
+                    auto it2 = blocks.begin();
+                    for(; it2 != blocks.end(); ++it2)
+                    {
+                        if(it2->m_seqNo == toBeMoved)
+                        {
+                            it2->used = false;
+                            break;
+                        }
+                    }
+                    cout << "here, moving " << it2->m_seqNo
+                         << " to the back" << endl;
+                    rotate(it2, it2+1, blocks.end());
+                }
+            }
+            */
+            cntr++;
         }
         else
         {
+            // if we can't find a fitting block, or have tried all blocks
             //if(it != blocks.end())
-            auto mit = seqNumMap.find(cntr);
+            //auto mit = seqNumMap.find(cntr);
             if(mit != seqNumMap.end())
             {
                 cout << "erasing cntr:" << cntr
                      << ", (seqNum:" << mit->second.first
                      << ",posIdx:" << mit->second.second << ")" << endl;
                 seqNumMap.erase(mit);
+                //blocksToSkipMap.erase(cntr);
+                //toBeSkipped.erase(cntr);
             }
-            cntr--;
             // if can't find a fitting block
             if(boardStates.empty())
             {
                 cout << "boardStates empty, unsolvable" << endl;
                 return false;
             }
-            area = boardStates.top();
+            set<int>& topArea = boardStates.top();
+            restoreState(topArea);
             boardStates.pop();
-            restoreState(area);
+            area.clear();    
             int seqNo = savedBlocks.top();
             cout << "popping " << seqNo << endl;
             auto it = blocks.begin();
@@ -241,18 +196,53 @@ bool Board::fit(std::vector<Block>& blocks)
                      << ")" << endl;
             }
             */
-            if(!it->rotatePosition())
+            // after popping the previous piece out of the stack,
+            // rotate it.  fit() will make sure to skip the piece
+            // if all its positions have been tested.
+            it->rotatePosition();
+                /*
             {
+                auto it3 = blocksToSkipMap.find(cntr);
+                if(it3 == blocksToSkipMap.end())
+                {
+                    cout << "adding2 " << it->m_seqNo
+                         << " to blocksToSkipMap"
+                         << " for loop " << cntr << endl;
+                    blocksToSkipMap[cntr] = it->m_seqNo;
+                }
+                else
+                {
+                    cout << "not adding, blocksToSkipMap[" << cntr
+                         << "]:" << it3->second << endl;
+                }
+                */
+                /*
+                cout << "moving " << it->m_seqNo
+                     << " to the back" << endl;
                 rotate(it, it+1, blocks.end());
             }
+                */
+                /*
+            else
+            {
+                if(toBeSkipped.find(cntr) == toBeSkipped.end())
+                {
+                    cout << "adding " << it->m_seqNo
+                         << " to toBeSkipped for loop " << cntr
+                         << endl;
+                    toBeSkipped[cntr] = it->m_seqNo;
+                }
+            }
+                */
             savedBlocks.pop();
             cout << "no block fits, cntr:" << cntr
                  << ", seqNuMap.size:" << seqNumMap.size()
                  << ", stack size: "
                  << boardStates.size() << ", "
                  << savedBlocks.size() << ", "
-                 << ", adjmap size:" << m_adjMap.size()
+                 << "adjmap size:" << m_adjMap.size()
                  << ", current board:\n" << *this << endl;
+            cntr--;
             //recNextSeqNo = false;
         }
     }
@@ -283,16 +273,27 @@ void Board::markOccupied(const set<int>& pos, const Color::Code& c)
         }
         m_adjMap.erase(p);
     }
-    cout << "occupied" << endl;
-    cout << "adjmap size:" << m_adjMap.size()
+    cout << "occupied" << endl
+         << "adjmap size:" << m_adjMap.size()
          << ", current board:\n" << *this << endl;
+    //printAdjMap();
 }
 
-vector<Block>::iterator Board::fit(set<int>& area, vector<Block>& blocks)
+vector<Block>::iterator Board::fit(set<int>& area,
+                                   vector<Block>& blocks,
+                                   const pair<int, int>& blockToSkip)
 {
     cout << "board::fit, area.size: " << area.size()
          << ", blocks.vector.size:" << blocks.size() << endl;
     if(area.size() <= 3) return blocks.end();
+    /*
+    int blockToSkip = -1;
+    const auto& cit = blocksToSkipMap.find(cntr);
+    if(cit != blocksToSkipMap.end())
+    {
+        blockToSkip = cit->second;
+    }
+    */
     /*
     if(area.size() == 4)
     {
@@ -308,11 +309,18 @@ vector<Block>::iterator Board::fit(set<int>& area, vector<Block>& blocks)
     auto it = blocks.begin();
     for(; it != blocks.end(); ++it)
     {
-        cout << "block:" << it->m_seqNo << ", used: " << it->used << endl;
+        cout << "block:(" << it->m_seqNo
+             << "," << it->getPosIdx()
+             << "), blockToSkip:(" << blockToSkip.first
+             << "," << blockToSkip.second
+             << "), used: " << it->used << endl;
         if(it->used) continue;
-        if(it->fitIn(area, pos))
+        if(it->m_seqNo == blockToSkip.first &&
+           it->getPosIdx() == blockToSkip.second) continue;
+        if(it->fitIn(area, (it->m_seqNo == blockToSkip.first ? blockToSkip.second : -1), pos))
         {
-            cout << "here3, seqNo:" << it->m_seqNo << endl;
+            cout << "here3, seqNo:" << it->m_seqNo
+                 << ", posIdx:" << it->getPosIdx() << endl;
             markOccupied(pos, it->colorMod.code);
             return it;
         }
@@ -357,6 +365,11 @@ void Board::restoreAdjMap()
                     {
                         m_adjMap[myIdx].insert(otherIdx);
                         m_adjMap[otherIdx].insert(myIdx);
+                        /*
+                        cout << "adding to adjmap:(" << myIdx
+                             << "," << otherIdx
+                             << ")" << endl;
+                    */
                     }
                 }
                 if(j > 0)
@@ -366,10 +379,26 @@ void Board::restoreAdjMap()
                     {
                         m_adjMap[myIdx].insert(otherIdx);
                         m_adjMap[otherIdx].insert(myIdx);
+                        /*
+                        cout << "ADDING to adjmap:(" << myIdx
+                             << "," << otherIdx
+                             << ")" << endl;
+                             */
                     }
                 }
             }
         }
+    }
+    //printAdjMap();
+}
+
+void Board::printAdjMap()
+{
+    for(auto const&[key, val]:m_adjMap)
+    {
+        cout << key << "==>";
+        for(auto i: val) cout << i << " ";
+        cout << endl;
     }
 }
 
@@ -427,42 +456,6 @@ bool Board::findNextOpenArea(set<int>& s)
         }
     }
     return !s.empty();
-    //delete[] visited;
-}
-
-bool Board::findNextOpenArea2(set<int>& s)
-{
-    // Mark all the vertices as not visited
-    //bool* visited = new bool[V];
-//    cout << "in findNextOpen, current board:\n" << *this << endl;
-    memset(m_visited, 0, sizeof(m_visited));
-    //for (int v = 0; v < V; v++)
-    //    m_visited[v] = false;
- 
-    for (int i = 0; i < m_numRows; ++i)
-    {
-        for(int j = 0; j < m_numCols; ++j)
-        {
-            if(m_cells[i][j].status == CellStatus::EMPTY &&
-               m_visited[i*m_numCols+j] == false)
-            {
-                // print all reachable vertices
-                // from v
-                //set<int> group;
-                DFSUtil(i*m_numCols+j, s);//, m_visited);
-#if _DEBUG
-                cout << "area size:" << s.size() << ", [ ";
-                for(const auto i: s)
-                {
-                    cout << i << " ";
-                }
-                cout << "]" << endl;
-#endif
-                return !s.empty();
-            }
-        }
-    }
-    return false;
     //delete[] visited;
 }
 

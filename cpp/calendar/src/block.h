@@ -14,7 +14,7 @@ class Block
         int m_currIdx;
         int m_startingIdx;
         POBVector():m_currIdx(0){}
-        bool fitIn(const std::set<int>&, std::set<int>&, int);
+        bool fitIn(const std::set<int>&, int, std::set<int>&, int);
         bool rotate();
     };
 public:
@@ -29,7 +29,7 @@ public:
     friend std::ostream& operator<<(std::ostream& os, const Block& b);
     bool operator==(const Block& other);
     long getNumRep() const { return numRep; }
-    bool fitIn(const std::set<int>&, std::set<int>&);
+    bool fitIn(const std::set<int>&, int, std::set<int>&);
     int getPosIdx() const { return m_pobVec.m_currIdx; }
 
     Color::Modifier colorMod;

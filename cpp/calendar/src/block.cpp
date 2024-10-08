@@ -180,9 +180,10 @@ bool Block::sameAs(const Block& other) const
 }
 
 bool Block::fitIn(const set<int>& area,
+                  int stopPos,
                   set<int>& occupiedPos)
 {
-    return m_pobVec.fitIn(area, occupiedPos, boardNumCols);
+    return m_pobVec.fitIn(area, stopPos, occupiedPos, boardNumCols);
 /*
     cout << "posvec size:" << posVec.size() << endl;
     for(auto& s : posVec)
@@ -268,19 +269,29 @@ bool Block::POBVector::rotate()
         m_currIdx = 0;
         rc = false;
     }
+    cout << "In pobvector::rotate, m_currIdx:" << m_currIdx
+         << ", posVec.size:" << m_posVec.size() << endl;
     return rc;
 }
 
 bool Block::POBVector::fitIn(const std::set<int>& area,
+                             int stopPos,
                              std::set<int>& occupiedPos,
                              int numCols)
 {
     cout << "area=[";
     for(auto i : area) cout << i << " ";
     cout << "]\nin pobvec.fit, m_posVec size:" << m_posVec.size()
-         << ", numCols:" << numCols << ", currIdx:" << m_currIdx << endl;
+         << ", numCols:" << numCols << ", stopPos:" << stopPos
+         << ", currIdx:" << m_currIdx << endl;
     while(m_currIdx < m_posVec.size())
     {
+        if(stopPos == m_currIdx)
+        {
+            return false;
+            //m_currIdx++;
+            //continue;
+        }
         const set<int>& p = m_posVec[m_currIdx];
         int shift = *area.begin() - *p.begin();
         if(shift >= 0)

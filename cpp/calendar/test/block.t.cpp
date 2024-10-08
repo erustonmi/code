@@ -65,6 +65,17 @@ void blockTest2()
     cout << b10 << endl;
 }
 
+void blockTest3()
+{
+    Color::Modifier red(Color::FG_RED);
+    vector<Block> vb;
+
+    vector<int> tmp;
+    tmp = {2, 4};
+    vb.emplace_back(red, 3, 2, 6, 6, tmp);
+    cout << vb[0] << endl;
+}
+
 void blockTest()
 {
     Color::Modifier red(Color::FG_RED);
@@ -167,26 +178,46 @@ void solveBoard()
     Color::Modifier magenta(Color::FG_MAGENTA);
     Color::Modifier blue(Color::FG_BLUE);
     vector<Block> vb;
-    vector<int> tmp = {1, 3};
-    vb.emplace_back(green, 3, 2, 8, 7, tmp);
+    vector<int> tmp;
     tmp = {0, 1, 2};
     vb.emplace_back(red, 2, 4, 8, 7, tmp);
-    tmp = {4};
-    vb.emplace_back(yellow, 3, 2, 8, 7, tmp);
-    tmp = {1};
-    vb.emplace_back(blue, 2, 3, 8, 7, tmp);
-    tmp = {0, 2, 3, 5};
-    vb.emplace_back(white, 3, 3, 8, 7, tmp);
-    tmp = {};
-    vb.emplace_back(cyan, 1, 4, 8, 7, tmp);
-    tmp = {0, 1, 7};
-    vb.emplace_back(magenta, 2, 4, 8, 7, tmp);
+    cout << vb[0] << endl;
+
     tmp = {0, 5};
     vb.emplace_back(red, 2, 3, 8, 7, tmp);
+    cout << vb[1] << endl;
+
+    tmp = {1, 3};
+    vb.emplace_back(green, 3, 2, 8, 7, tmp);
+    cout << vb[2] << endl;
+
+    tmp = {4};
+    vb.emplace_back(yellow, 3, 2, 8, 7, tmp);
+    cout << vb[3] << endl;
+
+    tmp = {1};
+    vb.emplace_back(blue, 2, 3, 8, 7, tmp);
+    cout << vb[4] << endl;
+
+    tmp = {0, 2, 3, 5};
+    vb.emplace_back(white, 3, 3, 8, 7, tmp);
+    cout << vb[5] << endl;
+
+    tmp = {};
+    vb.emplace_back(cyan, 1, 4, 8, 7, tmp);
+    cout << vb[6] << endl;
+
+    tmp = {0, 1, 7};
+    vb.emplace_back(magenta, 2, 4, 8, 7, tmp);
+    cout << vb[7] << endl;
+
     tmp = {0, 1, 3, 4};
     vb.emplace_back(white, 3, 3, 8, 7, tmp);
+    cout << vb[8] << endl;
+
     tmp = {1, 2, 6, 7};
     vb.emplace_back(blue, 3, 3, 8, 7, tmp);
+    cout << vb[9] << endl;
     if(b.fit(vb))
     {
         cout << "solved" << endl;
@@ -300,10 +331,13 @@ void solveTest4()
     vector<Block> vb;
     vector<int> tmp = {1, 3};
     vb.emplace_back(green, 3, 2, 4, 5, tmp);
+
     tmp = {0, 1, 2};
     vb.emplace_back(red, 2, 4, 4, 5, tmp);
+
     tmp = {4};
     vb.emplace_back(yellow, 3, 2, 4, 5, tmp);
+
     if(b.fit(vb))
     {
         cout << "solved" << endl;
@@ -314,6 +348,7 @@ void solveTest4()
     }
     cout << b;
 }
+
 void solveTest5()
 {
     Color::Modifier cyan(Color::BG_CYAN);
@@ -344,6 +379,175 @@ void solveTest5()
     }
     cout << b;
 }
+
+void solveTest6_1()
+{
+    Color::Modifier cyan(Color::BG_CYAN);
+    vector<int> unavailableCells = {12};
+    Board b(cyan, unavailableCells, 5, 4);
+    cout << "board:\n" << b;
+    Color::Modifier green(Color::FG_GREEN);
+    Color::Modifier red(Color::FG_RED);
+    Color::Modifier yellow(Color::FG_YELLOW);
+    Color::Modifier blue(Color::FG_BLUE);
+    vector<Block> vb;
+    vector<int> tmp;
+    tmp = {1, 3, 6};
+    vb.emplace_back(green, 4, 2, 5, 4, tmp);
+    cout << vb[0] << endl;
+    tmp = {4};
+    vb.emplace_back(red, 2, 3, 5, 4, tmp);
+    cout << vb[1] << endl;
+    tmp = {1};
+    vb.emplace_back(yellow, 3, 2, 5, 4, tmp);
+    cout << vb[2] << endl;
+    tmp = {};
+    vb.emplace_back(blue, 1, 4, 5, 4, tmp);
+    cout << vb[3] << endl;
+    if(b.fit(vb))
+    {
+        cout << "solved" << endl;
+    }
+    else
+    {
+        cout << "unsolvable" << endl;
+    }
+    cout << b;
+}
+
+void solveTest6_2()
+{
+    Color::Modifier cyan(Color::BG_CYAN);
+    vector<int> unavailableCells = {12};
+    Board b(cyan, unavailableCells, 5, 4);
+    cout << "board:\n" << b;
+    Color::Modifier green(Color::FG_GREEN);
+    Color::Modifier red(Color::FG_RED);
+    Color::Modifier yellow(Color::FG_YELLOW);
+    Color::Modifier blue(Color::FG_BLUE);
+    vector<Block> vb;
+    vector<int> tmp = {};
+    vb.emplace_back(blue, 1, 4, 5, 4, tmp);
+    cout << vb[0] << endl;
+    tmp = {1, 3, 6};
+    vb.emplace_back(green, 4, 2, 5, 4, tmp);
+    cout << vb[1] << endl;
+    tmp = {4};
+    vb.emplace_back(red, 2, 3, 5, 4, tmp);
+    cout << vb[2] << endl;
+    tmp = {4};
+    vb.emplace_back(yellow, 3, 2, 5, 4, tmp);
+    cout << vb[3] << endl;
+    if(b.fit(vb))
+    {
+        cout << "solved" << endl;
+    }
+    else
+    {
+        cout << "unsolvable" << endl;
+    }
+    cout << b;
+}
+
+void solveTest7()
+{
+    Color::Modifier cyan(Color::BG_CYAN);
+    Color::Modifier defBg(Color::BG_DEFAULT);
+    vector<int> unavailableCells = {16, 17};
+    Board b(defBg, unavailableCells, 5, 5);
+    cout << "board:\n" << b;
+    Color::Modifier green(Color::FG_GREEN);
+    Color::Modifier red(Color::FG_RED);
+    Color::Modifier yellow(Color::FG_YELLOW);
+    Color::Modifier blue(Color::FG_BLUE);
+    vector<Block> vb;
+
+    vector<int> tmp;
+
+    tmp = {3, 4, 6, 7};
+    vb.emplace_back(red, 3, 3, 5, 5, tmp);
+    cout << vb[0] << endl;
+
+    tmp = {};
+    vb.emplace_back(blue, 4, 1, 5, 5, tmp);
+    cout << vb[1] << endl;
+
+    tmp = {1, 2, 3};
+    vb.emplace_back(green, 2, 4, 5, 5, tmp);
+    cout << vb[2] << endl;
+
+    tmp = {3, 5};
+    vb.emplace_back(cyan, 3, 2, 5, 5, tmp);
+    cout << vb[3] << endl;
+
+    tmp = {0, 3, 5, 8};
+    vb.emplace_back(yellow, 3, 3, 5, 5, tmp);
+    cout << vb[4] << endl;
+
+    if(b.fit(vb))
+    {
+        cout << "solved" << endl;
+    }
+    else
+    {
+        cout << "unsolvable" << endl;
+    }
+    cout << b;
+}
+
+void solveTest8()
+{
+    Color::Modifier defBg(Color::BG_DEFAULT);
+    vector<int> unavailableCells = {5, 9, 11, 25, 26, 27, 30, 31};
+    //vector<int> unavailableCells = {5, 9, 11, 18, 19, 20, 24, 25, 26, 27, 30, 31};
+    //vector<int> unavailableCells = {5, 9, 11, 25, 26, 27, 29, 30, 31, 32, 33, 34, 35};
+    Board b(defBg, unavailableCells, 6, 6);
+    cout << "board:\n" << b;
+    Color::Modifier green(Color::FG_GREEN);
+    Color::Modifier red(Color::FG_RED);
+    Color::Modifier yellow(Color::FG_YELLOW);
+    Color::Modifier blue(Color::FG_BLUE);
+    Color::Modifier cyanBg(Color::BG_CYAN);
+    Color::Modifier redBg(Color::BG_RED);
+    vector<Block> vb;
+
+    vector<int> tmp;
+    int cntr = 0;
+
+    tmp = {1, 2, 3};
+    vb.emplace_back(green, 2, 4, 6, 6, tmp);
+    cout << vb[cntr++] << endl;
+
+    tmp = {3, 4, 6, 7};
+    vb.emplace_back(red, 3, 3, 6, 6, tmp);
+    cout << vb[cntr++] << endl;
+
+    tmp = {2, 3};
+    vb.emplace_back(blue, 2, 3, 6, 6, tmp);
+    cout << vb[cntr++] << endl;
+
+    tmp = {2, 4};
+    vb.emplace_back(redBg, 3, 2, 6, 6, tmp);
+    cout << vb[cntr++] << endl;
+
+    tmp = {2, 3, 4};
+    vb.emplace_back(cyanBg, 2, 4, 6, 6, tmp);
+    cout << vb[cntr++] << endl;
+
+    tmp = {4};
+    vb.emplace_back(yellow, 3, 2, 6, 6, tmp);
+    cout << vb[cntr++] << endl;
+
+    if(b.fit(vb))
+    {
+        cout << "solved" << endl;
+    }
+    else
+    {
+        cout << "unsolvable" << endl;
+    }
+}
+
 void fitTest()
 {
     Color::Modifier green(Color::FG_GREEN);
@@ -351,7 +555,7 @@ void fitTest()
     cout << bk;
     set<int> area = {1, 2, 3, 4};
     set<int> p;
-    if(bk.fitIn(area, p))
+    if(bk.fitIn(area, -1, p))
     {
         cout << "fit" << endl;
     }
@@ -365,6 +569,7 @@ int main(int argc, char** argv)
 {
     //blockTest();
     //blockTest2();
+    //blockTest3();
 //    flipTest();
 //    rotateTest();
     //equalityTest();
@@ -374,7 +579,11 @@ int main(int argc, char** argv)
     //solveTest2();
     //solveTest3();
     //solveTest4();
-    solveTest5();
+    //solveTest5();
+    //solveTest6_1();
+    solveTest6_2();
+    //solveTest7();
+    //solveTest8();
     //fitTest();
     return 0;
 }

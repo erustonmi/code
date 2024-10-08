@@ -24,7 +24,7 @@ public:
     Board(const Color::Modifier&, const std::vector<int>&,
           int numRows=NUM_ROWS, int numCols=NUM_COLS);
     bool fit(std::vector<Block>&);
-    bool fit2(std::vector<Block>&);
+    //bool fit2(std::vector<Block>&);
     friend std::ostream& operator<<(std::ostream& os, const Board& p);
 protected:
     std::map<int, std::set<int>> m_adjMap;
@@ -41,13 +41,17 @@ protected:
     void updateCellStatus(int r, int c, CellStatus s);
     bool solve(std::set<int>&, std::vector<Block>&);
     bool findNextOpenArea(std::set<int>&);
-    bool findNextOpenArea2(std::set<int>&);
+    //bool findNextOpenArea2(std::set<int>&);
 
-    std::vector<Block>::iterator fit(std::set<int>&,
-                                     std::vector<Block>&);
+//    std::vector<Block>::iterator fit(std::set<int>&,
+ //                                    std::vector<Block>&);
+    std::vector<Block>::iterator fit(std::set<int>& area,
+                                std::vector<Block>& blocks,
+                                const std::pair<int, int>& blockToSkip);
     void markOccupied(const std::set<int>& pos, const Color::Code&);
     void saveState(std::set<int>&);
     void restoreState(const std::set<int>&);
     void restoreAdjMap();
+    void printAdjMap();
 };
 #endif
