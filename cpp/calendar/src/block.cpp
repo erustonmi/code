@@ -157,9 +157,15 @@ bool Block::sameAs(const Block& other) const
 bool Block::fitIn(const set<int>& area,
                   set<int>& occupiedPos)
 {
-//   int diff = area.size() - size;
-//    if(diff < 0 || diff == 1 || diff == 2 || diff == 3 || diff == 6 || diff == 7) return false/;
-//    if(diff < 0) return false;
+    /*
+    int diff = area.size() - size;
+    if(diff < 0 || (diff <=3 && diff >= 1) ||
+       diff == 6 || diff == 7)
+    {
+        m_pobVec.m_currIdx = 0;
+        return false;
+    }
+    */
     return m_pobVec.fitIn(area, occupiedPos, boardNumCols);
 }
 
@@ -241,6 +247,13 @@ bool Block::POBVector::fitIn(const std::set<int>& area,
          << ", numCols:" << numCols
          << ", currIdx:" << m_currIdx << endl;
 #endif
+    int diff = area.size() - m_posVec[0].size();
+    if(diff < 0 || (diff <=3 && diff >= 1) ||
+       diff == 6 || diff == 7)
+    {
+        m_currIdx = 0;
+        return false;
+    }
     while(m_currIdx < m_posVec.size())
     {
         const set<int>& p = m_posVec[m_currIdx];

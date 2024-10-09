@@ -177,6 +177,7 @@ void solveBoard(Month m, int d, DayOfWeek dow)
     Color::Modifier green(Color::FG_GREEN);
     Color::Modifier greenBg(Color::BG_GREEN);
     Color::Modifier cyan(Color::FG_CYAN);
+    Color::Modifier cyanBg(Color::BG_CYAN);
     Color::Modifier white(Color::FG_WHITE);
     Color::Modifier yellow(Color::FG_YELLOW);
     Color::Modifier magenta(Color::FG_MAGENTA);
@@ -205,11 +206,11 @@ void solveBoard(Month m, int d, DayOfWeek dow)
 //    cout << vb[4] << endl;
 
     tmp = {0, 2, 3, 5};
-    vb.emplace_back(white, 3, 3, 8, 7, tmp);
+    vb.emplace_back(cyan, 3, 3, 8, 7, tmp);
 //    cout << vb[5] << endl;
 
     tmp = {};
-    vb.emplace_back(cyan, 1, 4, 8, 7, tmp);
+    vb.emplace_back(cyanBg, 1, 4, 8, 7, tmp);
 //    cout << vb[6] << endl;
 
     tmp = {0, 1, 7};
@@ -637,7 +638,8 @@ int main(int argc, char** argv)
     }
     else
     {
-        cerr << "provide month(in first 3 letter), day, day of week(in first 3 letter)" << endl;
+        cerr << "provide month(first 3 letter, eg. jan for January, feb for Feburary, etc), ";
+        cerr << "day, day of the week(first 3 letter, eg. mon for Monday, etc)" << endl;
         exit(-1);
     }
     //solveTest1();
