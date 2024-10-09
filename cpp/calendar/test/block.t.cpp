@@ -65,6 +65,17 @@ void blockTest2()
     cout << b10 << endl;
 }
 
+void blockTest3()
+{
+    Color::Modifier red(Color::FG_RED);
+    vector<Block> vb;
+
+    vector<int> tmp;
+    tmp = {2, 4};
+    vb.emplace_back(red, 3, 2, 6, 6, tmp);
+    cout << vb[0] << endl;
+}
+
 void blockTest()
 {
     Color::Modifier red(Color::FG_RED);
@@ -152,41 +163,68 @@ void boardTest()
     */
 }
 
-void solveBoard()
+void solveBoard(Month m, int d, DayOfWeek dow)
 {
     Color::Modifier defbg(Color::BG_DEFAULT);
     vector<int> unavailableCells =
-          {6, 9, 13, 37, 46, 49, 50, 51, 52};
+          {6, 13, 49, 50, 51, 52};
     Board b(defbg, unavailableCells, 8,  7);
-    cout << b;
+    b.setDate(m, d,  dow);
+    b.initBoard();
+    cout << "initial board:" << endl << b;
     Color::Modifier red(Color::FG_RED);
+    Color::Modifier redBg(Color::BG_RED);
     Color::Modifier green(Color::FG_GREEN);
+    Color::Modifier greenBg(Color::BG_GREEN);
     Color::Modifier cyan(Color::FG_CYAN);
     Color::Modifier white(Color::FG_WHITE);
     Color::Modifier yellow(Color::FG_YELLOW);
     Color::Modifier magenta(Color::FG_MAGENTA);
     Color::Modifier blue(Color::FG_BLUE);
+    Color::Modifier blueBg(Color::BG_BLUE);
     vector<Block> vb;
-    vector<int> tmp = {1, 3};
-    vb.emplace_back(green, 3, 2, 8, 7, tmp);
+    vector<int> tmp;
     tmp = {0, 1, 2};
     vb.emplace_back(red, 2, 4, 8, 7, tmp);
+//    cout << vb[0] << endl;
+
+    tmp = {0, 5};
+    vb.emplace_back(redBg, 2, 3, 8, 7, tmp);
+//    cout << vb[1] << endl;
+
+    tmp = {1, 3};
+    vb.emplace_back(green, 3, 2, 8, 7, tmp);
+//    cout << vb[2] << endl;
+
     tmp = {4};
     vb.emplace_back(yellow, 3, 2, 8, 7, tmp);
+//    cout << vb[3] << endl;
+
     tmp = {1};
     vb.emplace_back(blue, 2, 3, 8, 7, tmp);
+//    cout << vb[4] << endl;
+
     tmp = {0, 2, 3, 5};
     vb.emplace_back(white, 3, 3, 8, 7, tmp);
+//    cout << vb[5] << endl;
+
     tmp = {};
     vb.emplace_back(cyan, 1, 4, 8, 7, tmp);
+//    cout << vb[6] << endl;
+
     tmp = {0, 1, 7};
     vb.emplace_back(magenta, 2, 4, 8, 7, tmp);
-    tmp = {0, 5};
-    vb.emplace_back(red, 2, 3, 8, 7, tmp);
+//    cout << vb[7] << endl;
+
     tmp = {0, 1, 3, 4};
-    vb.emplace_back(white, 3, 3, 8, 7, tmp);
+    vb.emplace_back(greenBg, 3, 3, 8, 7, tmp);
+//    cout << vb[8] << endl;
+
     tmp = {1, 2, 6, 7};
-    vb.emplace_back(blue, 3, 3, 8, 7, tmp);
+    vb.emplace_back(blueBg, 3, 3, 8, 7, tmp);
+//    cout << vb[9] << endl;
+
+    cout << endl;
     if(b.fit(vb))
     {
         cout << "solved" << endl;
@@ -297,13 +335,20 @@ void solveTest4()
     Color::Modifier green(Color::FG_GREEN);
     Color::Modifier red(Color::FG_RED);
     Color::Modifier yellow(Color::FG_YELLOW);
+    int cntr = 0;
     vector<Block> vb;
     vector<int> tmp = {1, 3};
     vb.emplace_back(green, 3, 2, 4, 5, tmp);
+    cout << vb[cntr++] << endl;
+
     tmp = {0, 1, 2};
     vb.emplace_back(red, 2, 4, 4, 5, tmp);
+    cout << vb[cntr++] << endl;
+
     tmp = {4};
     vb.emplace_back(yellow, 3, 2, 4, 5, tmp);
+    cout << vb[cntr++] << endl;
+
     if(b.fit(vb))
     {
         cout << "solved" << endl;
@@ -314,6 +359,7 @@ void solveTest4()
     }
     cout << b;
 }
+
 void solveTest5()
 {
     Color::Modifier cyan(Color::BG_CYAN);
@@ -344,6 +390,175 @@ void solveTest5()
     }
     cout << b;
 }
+
+void solveTest6_1()
+{
+    Color::Modifier cyan(Color::BG_CYAN);
+    vector<int> unavailableCells = {12};
+    Board b(cyan, unavailableCells, 5, 4);
+    cout << "board:\n" << b;
+    Color::Modifier green(Color::FG_GREEN);
+    Color::Modifier red(Color::FG_RED);
+    Color::Modifier yellow(Color::FG_YELLOW);
+    Color::Modifier blue(Color::FG_BLUE);
+    vector<Block> vb;
+    vector<int> tmp;
+    tmp = {1, 3, 6};
+    vb.emplace_back(green, 4, 2, 5, 4, tmp);
+    cout << vb[0] << endl;
+    tmp = {4};
+    vb.emplace_back(red, 2, 3, 5, 4, tmp);
+    cout << vb[1] << endl;
+    tmp = {1};
+    vb.emplace_back(yellow, 3, 2, 5, 4, tmp);
+    cout << vb[2] << endl;
+    tmp = {};
+    vb.emplace_back(blue, 1, 4, 5, 4, tmp);
+    cout << vb[3] << endl;
+    if(b.fit(vb))
+    {
+        cout << "solved" << endl;
+    }
+    else
+    {
+        cout << "unsolvable" << endl;
+    }
+    cout << b;
+}
+
+void solveTest6_2()
+{
+    Color::Modifier cyan(Color::BG_CYAN);
+    vector<int> unavailableCells = {12};
+    Board b(cyan, unavailableCells, 5, 4);
+    cout << "board:\n" << b;
+    Color::Modifier green(Color::FG_GREEN);
+    Color::Modifier red(Color::FG_RED);
+    Color::Modifier yellow(Color::FG_YELLOW);
+    Color::Modifier blue(Color::FG_BLUE);
+    vector<Block> vb;
+    vector<int> tmp = {};
+    vb.emplace_back(blue, 1, 4, 5, 4, tmp);
+    cout << vb[0] << endl;
+    tmp = {1, 3, 6};
+    vb.emplace_back(green, 4, 2, 5, 4, tmp);
+    cout << vb[1] << endl;
+    tmp = {4};
+    vb.emplace_back(red, 2, 3, 5, 4, tmp);
+    cout << vb[2] << endl;
+    tmp = {4};
+    vb.emplace_back(yellow, 3, 2, 5, 4, tmp);
+    cout << vb[3] << endl;
+    if(b.fit(vb))
+    {
+        cout << "solved" << endl;
+    }
+    else
+    {
+        cout << "unsolvable" << endl;
+    }
+    cout << b;
+}
+
+void solveTest7()
+{
+    Color::Modifier cyan(Color::BG_CYAN);
+    Color::Modifier defBg(Color::BG_DEFAULT);
+    vector<int> unavailableCells = {16, 17};
+    Board b(defBg, unavailableCells, 5, 5);
+    cout << "board:\n" << b;
+    Color::Modifier green(Color::FG_GREEN);
+    Color::Modifier red(Color::FG_RED);
+    Color::Modifier yellow(Color::FG_YELLOW);
+    Color::Modifier blue(Color::FG_BLUE);
+    vector<Block> vb;
+
+    vector<int> tmp;
+
+    tmp = {3, 4, 6, 7};
+    vb.emplace_back(red, 3, 3, 5, 5, tmp);
+    cout << vb[0] << endl;
+
+    tmp = {};
+    vb.emplace_back(blue, 4, 1, 5, 5, tmp);
+    cout << vb[1] << endl;
+
+    tmp = {1, 2, 3};
+    vb.emplace_back(green, 2, 4, 5, 5, tmp);
+    cout << vb[2] << endl;
+
+    tmp = {3, 5};
+    vb.emplace_back(cyan, 3, 2, 5, 5, tmp);
+    cout << vb[3] << endl;
+
+    tmp = {0, 3, 5, 8};
+    vb.emplace_back(yellow, 3, 3, 5, 5, tmp);
+    cout << vb[4] << endl;
+
+    if(b.fit(vb))
+    {
+        cout << "solved" << endl;
+    }
+    else
+    {
+        cout << "unsolvable" << endl;
+    }
+    cout << b;
+}
+
+void solveTest8()
+{
+    Color::Modifier defBg(Color::BG_DEFAULT);
+    vector<int> unavailableCells = {5, 9, 11, 25, 26, 27, 30, 31};
+    //vector<int> unavailableCells = {5, 9, 11, 18, 19, 20, 24, 25, 26, 27, 30, 31};
+    //vector<int> unavailableCells = {5, 9, 11, 25, 26, 27, 29, 30, 31, 32, 33, 34, 35};
+    Board b(defBg, unavailableCells, 6, 6);
+    cout << "board:\n" << b;
+    Color::Modifier green(Color::FG_GREEN);
+    Color::Modifier red(Color::FG_RED);
+    Color::Modifier yellow(Color::FG_YELLOW);
+    Color::Modifier blue(Color::FG_BLUE);
+    Color::Modifier cyanBg(Color::BG_CYAN);
+    Color::Modifier redBg(Color::BG_RED);
+    vector<Block> vb;
+
+    vector<int> tmp;
+    int cntr = 0;
+
+    tmp = {1, 2, 3};
+    vb.emplace_back(green, 2, 4, 6, 6, tmp);
+    cout << vb[cntr++] << endl;
+
+    tmp = {3, 4, 6, 7};
+    vb.emplace_back(red, 3, 3, 6, 6, tmp);
+    cout << vb[cntr++] << endl;
+
+    tmp = {2, 3};
+    vb.emplace_back(blue, 2, 3, 6, 6, tmp);
+    cout << vb[cntr++] << endl;
+
+    tmp = {2, 4};
+    vb.emplace_back(redBg, 3, 2, 6, 6, tmp);
+    cout << vb[cntr++] << endl;
+
+    tmp = {2, 3, 4};
+    vb.emplace_back(cyanBg, 2, 4, 6, 6, tmp);
+    cout << vb[cntr++] << endl;
+
+    tmp = {4};
+    vb.emplace_back(yellow, 3, 2, 6, 6, tmp);
+    cout << vb[cntr++] << endl;
+
+    if(b.fit(vb))
+    {
+        cout << "solved" << endl;
+    }
+    else
+    {
+        cout << "unsolvable" << endl;
+    }
+}
+
 void fitTest()
 {
     Color::Modifier green(Color::FG_GREEN);
@@ -361,20 +576,79 @@ void fitTest()
     }
 }
 
+Month getMonth(const char* str)
+{
+    if(strcasecmp(str, "jan") == 0) return JAN;
+    if(strcasecmp(str, "feb") == 0) return FEB;
+    if(strcasecmp(str, "mar") == 0) return MAR;
+    if(strcasecmp(str, "apr") == 0) return APR;
+    if(strcasecmp(str, "may") == 0) return MAY;
+    if(strcasecmp(str, "jun") == 0) return JUN;
+    if(strcasecmp(str, "jul") == 0) return JUL;
+    if(strcasecmp(str, "aug") == 0) return AUG;
+    if(strcasecmp(str, "sep") == 0) return SEP;
+    if(strcasecmp(str, "oct") == 0) return OCT;
+    if(strcasecmp(str, "nov") == 0) return NOV;
+    if(strcasecmp(str, "dec") == 0) return DEC;
+    cout << "unknown month, program exits" << endl;
+    exit(-1);
+}
+int getDayOfMonth(const char* str)
+{
+    int d = atoi(str);
+    if(d < 0 || d > 31) 
+    {
+        cout << "unknown day of month, program exits" << endl;
+        exit(-1);
+    }
+    return d;
+}
+
+DayOfWeek getDayOfWeek(const char* str)
+{
+    if(strcasecmp(str, "mon") == 0) return MON;
+    if(strcasecmp(str, "tue") == 0) return TUE;
+    if(strcasecmp(str, "wed") == 0) return WED;
+    if(strcasecmp(str, "thu") == 0) return THU;
+    if(strcasecmp(str, "fri") == 0) return FRI;
+    if(strcasecmp(str, "sat") == 0) return SAT;
+    if(strcasecmp(str, "sun") == 0) return SUN;
+    cout << "unknown day of week, program exits" << endl;
+    exit(-1);
+}
 int main(int argc, char** argv)
 {
     //blockTest();
     //blockTest2();
+    //blockTest3();
 //    flipTest();
 //    rotateTest();
     //equalityTest();
     //boardTest();
-    //solveBoard();
+    Month m = OCT;
+    int d = 8;
+    DayOfWeek dow = TUE;
+    if(argc == 4)
+    {
+        m = getMonth(argv[1]);
+        d = getDayOfMonth(argv[2]);
+        dow = getDayOfWeek(argv[3]);
+        solveBoard(m, d, dow);
+    }
+    else
+    {
+        cerr << "provide month(in first 3 letter), day, day of week(in first 3 letter)" << endl;
+        exit(-1);
+    }
     //solveTest1();
     //solveTest2();
     //solveTest3();
     //solveTest4();
-    solveTest5();
+    //solveTest5();
+    //solveTest6_1();
+    //solveTest6_2();
+    //solveTest7();
+    //solveTest8();
     //fitTest();
     return 0;
 }
