@@ -21,7 +21,7 @@ public:
     static int count;
     Block(const Color::Modifier&, int, int, int, int, const std::vector<int>&);
     Block(const Block& other);
-    ~Block(){ /*if(arr) { std::cout << "deleting " << arr << std::endl; delete[] arr; arr = 0; } */}
+    ~Block(){}
     int getSize() const { return size; }
     bool rotate();
     bool rotatePosition();
@@ -43,14 +43,11 @@ protected:
     int numCols;
     int boardNumCols;
     int size;
-    //int *arr;
     std::vector<int> arr;
     long numRep; // an integer representation of the block
     int origNumRows;
     int origNumCols;
     long origNumRep;
-    //int m_state;
-//    std::vector<std::set<int>> posVec;
     POBVector m_pobVec;
 };
 

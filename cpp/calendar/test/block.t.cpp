@@ -163,13 +163,15 @@ void boardTest()
     */
 }
 
-void solveBoard()
+void solveBoard(Month m, int d, DayOfWeek dow)
 {
     Color::Modifier defbg(Color::BG_DEFAULT);
     vector<int> unavailableCells =
-          {6, 9, 13, 37, 46, 49, 50, 51, 52};
+          {6, 13, 49, 50, 51, 52};
     Board b(defbg, unavailableCells, 8,  7);
-    cout << b;
+    b.setDate(m, d,  dow);
+    b.initBoard();
+    cout << "initial board:" << endl << b;
     Color::Modifier red(Color::FG_RED);
     Color::Modifier redBg(Color::BG_RED);
     Color::Modifier green(Color::FG_GREEN);
@@ -222,6 +224,7 @@ void solveBoard()
     vb.emplace_back(blueBg, 3, 3, 8, 7, tmp);
 //    cout << vb[9] << endl;
 
+    cout << endl;
     if(b.fit(vb))
     {
         cout << "solved" << endl;
@@ -573,6 +576,46 @@ void fitTest()
     }
 }
 
+Month getMonth(const char* str)
+{
+    if(strcasecmp(str, "jan") == 0) return JAN;
+    if(strcasecmp(str, "feb") == 0) return FEB;
+    if(strcasecmp(str, "mar") == 0) return MAR;
+    if(strcasecmp(str, "apr") == 0) return APR;
+    if(strcasecmp(str, "may") == 0) return MAY;
+    if(strcasecmp(str, "jun") == 0) return JUN;
+    if(strcasecmp(str, "jul") == 0) return JUL;
+    if(strcasecmp(str, "aug") == 0) return AUG;
+    if(strcasecmp(str, "sep") == 0) return SEP;
+    if(strcasecmp(str, "oct") == 0) return OCT;
+    if(strcasecmp(str, "nov") == 0) return NOV;
+    if(strcasecmp(str, "dec") == 0) return DEC;
+    cout << "unknown month, program exits" << endl;
+    exit(-1);
+}
+int getDayOfMonth(const char* str)
+{
+    int d = atoi(str);
+    if(d < 0 || d > 31) 
+    {
+        cout << "unknown day of month, program exits" << endl;
+        exit(-1);
+    }
+    return d;
+}
+
+DayOfWeek getDayOfWeek(const char* str)
+{
+    if(strcasecmp(str, "mon") == 0) return MON;
+    if(strcasecmp(str, "tue") == 0) return TUE;
+    if(strcasecmp(str, "wed") == 0) return WED;
+    if(strcasecmp(str, "thu") == 0) return THU;
+    if(strcasecmp(str, "fri") == 0) return FRI;
+    if(strcasecmp(str, "sat") == 0) return SAT;
+    if(strcasecmp(str, "sun") == 0) return SUN;
+    cout << "unknown day of week, program exits" << endl;
+    exit(-1);
+}
 int main(int argc, char** argv)
 {
     //blockTest();
@@ -582,7 +625,21 @@ int main(int argc, char** argv)
 //    rotateTest();
     //equalityTest();
     //boardTest();
-    solveBoard();
+    Month m = OCT;
+    int d = 8;
+    DayOfWeek dow = TUE;
+    if(argc == 4)
+    {
+        m = getMonth(argv[1]);
+        d = getDayOfMonth(argv[2]);
+        dow = getDayOfWeek(argv[3]);
+        solveBoard(m, d, dow);
+    }
+    else
+    {
+        cerr << "provide month(in first 3 letter), day, day of week(in first 3 letter)" << endl;
+        exit(-1);
+    }
     //solveTest1();
     //solveTest2();
     //solveTest3();

@@ -9,16 +9,12 @@ Board::Board(const Color::Modifier& cm,
 m_numRows(numRows),
 m_numCols(numCols),
 m_colorMod(cm),
-m_unavailableCells(v),
-m_cellsLeft(0)
-{
-    initBoard();
-}
+m_unavailableCells(v)
+{}
 
 void Board::initBoard()
 {
     const vector<int>& v = m_unavailableCells;
-    m_cellsLeft = 0;
     for(int i = 0; i < m_numRows; ++i)
     {
         for(int j = 0; j < m_numCols; ++j)
@@ -30,7 +26,6 @@ void Board::initBoard()
             else
             {
                 m_cells[i][j].status = CellStatus::EMPTY;
-                m_cellsLeft++;
                 int myIdx = i * m_numCols + j;
                 if(i > 0 && m_cells[i-1][j].status == CellStatus::EMPTY)
                 {
@@ -49,6 +44,13 @@ void Board::initBoard()
             }
         }
     }
+}
+
+void Board::setDate(Month m, int d, int dow)
+{
+    m_unavailableCells.push_back(m);
+    m_unavailableCells.push_back(d+13);
+    m_unavailableCells.push_back(dow);
 }
 
 bool Board::fit(std::vector<Block>& blocks)
@@ -165,8 +167,7 @@ int Board::fit(set<int>& area, vector<Block>& blocks, int startIdx)
          << ", startIdx:" << startIdx
          << ", blocks.vector.size:" << blocks.size() << endl;
 #endif
-    if(area.size() <= 3 || area.size() == 6 ||
-       area.size() == 7) return -1;
+    if(areaUnsolvable(area)) return -1;
     set<int> pos;
     int i = startIdx;
     for(; i < blocks.size(); ++i)
@@ -325,9 +326,35 @@ int Board::DFSUtil(int v, set<int>& group)//, bool visited[])
     return c;
 }
 
+bool Board::areaUnsolvable(const set<int>& area)
+{
+    int size = area.size();
+    if(size <= 3 || size == 6 ||
+       size == 7) return true;
+    if(size == 4 && m_numCols > 2)
+    {
+        vector<int> v(area.begin(), area.end());
+        // square area is unsolvable
+        if(v[1] - v[0] == v[3] - v[2] &&
+           v[3] - v[1] == m_numCols) return true;
+        // 3-way intersections are unsolvable
+        if(v[3] - v[1] == 2 && v[2] - v[0] == m_numCols ||
+           v[2] - v[0] == 2 && v[3] - v[1] == m_numCols ||
+           v[2] - v[1] == 1 && v[3] - v[0] == 2*m_numCols ||
+           v[2] - v[1] == 1 && v[3] - v[0] == 2*m_numCols) return true;
+    }
+    else if(size == 5)
+    {
+        // 4-way intersection is unsolvable
+        vector<int> v(area.begin(), area.end());
+        if(v[0] + v[4] == v[3] + v[1] &&
+           v[3] - v[1] == 2) return true;
+    }
+    return false;
+}
+
 std::ostream& operator<<(std::ostream& os, const Board& b)
 {
-    //os << "num empty cells:" << b.m_cellsLeft << endl;
     const char* RESET_COLOR = "\033[0m";
     for(int i = 0; i < b.m_numRows; ++i)
     {
@@ -339,7 +366,6 @@ std::ostream& operator<<(std::ostream& os, const Board& b)
             }
             else if(b.m_cells[i][j].status == CellStatus::OCCUPIED)
             {
-                //os << b.m_colorMod << "O" << RESET_COLOR;
                 os << Color::Modifier(b.m_cells[i][j].color) << "O" << RESET_COLOR;
             }
             else

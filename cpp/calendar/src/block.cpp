@@ -36,7 +36,6 @@ Block::Block(const Color::Modifier& cm,
     origNumCols = numCols;
     m_seqNo = count;
     count++;
-    //m_state = 0;
     bool flipped = false;
     do
     {
@@ -95,14 +94,13 @@ Block::Block(const Block& other):
         for(int i : p) s.insert(i);
         m_pobVec.m_posVec.push_back(s);
     }
-    m_pobVec.m_currIdx = 0;//other.m_pobVec.m_currIdx;
-    cout << "leaving copy constructor " << endl;
+    m_pobVec.m_currIdx = 0;
 }
 
 // returns false if the new state is the same as original
 bool Block::rotate()
 {
-    vector<int> sav = arr;//(arr, arr+numCols*numRows);
+    vector<int> sav = arr;
     for(int i = 0; i < numRows; ++i)
     {
         for(int j = 0; j < numCols; ++j)
@@ -114,7 +112,6 @@ bool Block::rotate()
     numRows = numCols;
     numCols = tmp;
     updateNumRep();
-    //m_state = (m_state + 90) % 360;
     return (numRows != origNumRows ||
             numCols != origNumCols ||
             numRep != origNumRep);
@@ -160,8 +157,9 @@ bool Block::sameAs(const Block& other) const
 bool Block::fitIn(const set<int>& area,
                   set<int>& occupiedPos)
 {
- //   int diff = area.size() - size;
-//    if(diff < 0 || diff == 1 || diff == 2 || diff == 3 || diff == 6 || diff == 7) return false;
+//   int diff = area.size() - size;
+//    if(diff < 0 || diff == 1 || diff == 2 || diff == 3 || diff == 6 || diff == 7) return false/;
+//    if(diff < 0) return false;
     return m_pobVec.fitIn(area, occupiedPos, boardNumCols);
 }
 
